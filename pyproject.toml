@@ -1,0 +1,7 @@
+[project]
+name = "cups-status-monitor"
+version = "0.1.0"
+description = "Monitor the status of CUPS printers."
+authors = [ "v81d", "Nom075" ]
+requires-python = ">=3.13"
+dependencies = []
