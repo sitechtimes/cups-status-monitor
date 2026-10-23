@@ -15,6 +15,9 @@
           packages = [
             pkgs.python3
             pkgs.uv
+            pkgs.pyright
+            pkgs.black
+            pkgs.isort
           ];
 
           env = lib.optionalAttrs pkgs.stdenv.isLinux {
