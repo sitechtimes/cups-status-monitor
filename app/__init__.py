@@ -1,5 +1,6 @@
 import os
 
+import db
 from dotenv import load_dotenv
 from flask import Flask
 
@@ -27,5 +28,9 @@ def create_app(test_config=None):
     @app.route("/hello")
     def hello():
         return "Hello, World!"
+
+    from . import app
+
+    db.init_app(app)
 
     return app
