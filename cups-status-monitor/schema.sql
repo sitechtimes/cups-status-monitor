@@ -8,5 +8,3 @@ CREATE TABLE user (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 )
-
-CREATE INDEX idx_users_email_hash ON user(email_hash);
