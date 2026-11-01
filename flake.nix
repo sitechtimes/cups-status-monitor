@@ -16,8 +16,7 @@
             python3
             uv
             pyright
-            black
-            isort
+            ruff
             vscode-css-languageserver
             prettier
           ];
