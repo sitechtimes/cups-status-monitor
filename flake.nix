@@ -12,15 +12,15 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in {
         default = pkgs.mkShell {
-          packages = [
-            pkgs.python3
-            pkgs.uv
-            pkgs.pyright
-            pkgs.black
-            pkgs.isort
+          packages = with pkgs; [
+            python3
+            uv
+            pyright
+            black
+            isort
           ];
 
-          env = lib.optionalAttrs pkgs.stdenv.isLinux {
+          env = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
             # Python libraries often load native shared objects using dlopen(3).
             # Setting LD_LIBRARY_PATH makes the dynamic library loader aware of libraries without using RPATH for lookup.
             LD_LIBRARY_PATH = lib.makeLibraryPath pkgs.pythonManylinuxPackages.manylinux1;
