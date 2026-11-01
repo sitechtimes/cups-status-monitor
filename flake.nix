@@ -18,6 +18,8 @@
             pyright
             black
             isort
+            vscode-css-languageserver
+            prettier
           ];
 
           env = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
