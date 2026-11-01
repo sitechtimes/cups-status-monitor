@@ -1,7 +1,6 @@
 import functools
 
 import click
-
 from flask import (
     Blueprint,
     flash,
@@ -12,8 +11,9 @@ from flask import (
     session,
     url_for,
 )
-from cups_status_monitor.db import get_db
 from werkzeug.security import check_password_hash, generate_password_hash
+
+from cups_status_monitor.db import get_db
 
 """
 Source: https://flask.palletsprojects.com/en/stable/tutorial/views
@@ -25,37 +25,41 @@ bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
 @bp.cli.command("register")
-@click.option("--email", prompt=True, help="The email of the user.")
+@click.option("--username", prompt=True, help="The name of the user.")
 @click.password_option(help="The password of the user.")
-def register(email, password):
+def register(username, password):
     db = get_db()
 
     try:
         db.execute(
-            "INSERT INTO user (email, password_hash) VALUES (?, ?)",
-            (email, generate_password_hash(password)),
+            "INSERT INTO user (username, password_hash) VALUES (?, ?)",
+            (username, generate_password_hash(password)),
         )
         db.commit()
     except db.IntegrityError:
-        raise click.ClickException(f"User with email {email} is already registered.")
+        raise click.ClickException(
+            f"User with username {username} is already registered."
+        )
 
-    click.echo(f"Successfully registered user with email {email}.")
+    click.echo(f"Successfully registered user with username {username}.")
 
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
     if request.method == "POST":
-        email = request.form["email"]
+        username = request.form["username"]
         password = request.form["password"]
 
         db = get_db()
         error = None
 
         # fetch the user row
-        user = db.execute("SELECT * FROM user WHERE email = ?", (email,)).fetchone()
+        user = db.execute(
+            "SELECT * FROM user WHERE username = ?", (username,)
+        ).fetchone()
 
         if user is None or not check_password_hash(user["password_hash"], password):
-            error = "Incorrect email or password."
+            error = "Incorrect username or password."
         else:
             session.clear()
             session["user_id"] = user["id"]
