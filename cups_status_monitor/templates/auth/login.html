@@ -1,13 +1,38 @@
 {% extends "base.html" %}
 {% block header %}
     <h1>{% block title %}Log In{% endblock %}</h1>
+    <h2 class="title">Log In</h2>
 {% endblock %}
 {% block content %}
     <form method="post">
-        <label for="username">Username</label>
-        <input name="username" id="username" required />
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password" required />
-        <input type="submit" value="Log In" />
+        <table>
+            <tbody>
+                <tr>
+                    <th class="label">Username:</th>
+                    <td class="field">
+                        <input name="username" id="username" size="40" maxlength="40" required />
+                        <small>(The username associated with your account)</small>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="label">Password:</th>
+                    <td class="field">
+                        <input type="password"
+                               name="password"
+                               id="password"
+                               size="40"
+                               maxlength="40"
+                               required />
+                        <small>(The password used to authenticate your account)</small>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="field">
+                        <input type="submit" value="Log In" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </form>
 {% endblock %}

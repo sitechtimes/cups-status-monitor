@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <title>{% block title %}{% endblock %} - CUPS Status Monitor</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}" />
 <nav>
-    <h1>CUPS Status Monitor</h1>
     <ul>
+        <li>
+            <a href="https://github.com/sitechtimes/cups-status-monitor"
+               target="_blank">CUPS Status Monitor</a>
+        </li>
+        <li>
+            <!-- TODO: add home page -->
+            <a href="#">Home</a>
+        </li>
         {% if g.user %}
             <li>
                 <span>{{ g.user['username'] }}</span>
@@ -13,7 +21,8 @@
             </li>
         {% else %}
             <li>
-                <a href="{{ url_for('auth.login') }}">Log In</a>
+                <a href="{{ url_for('auth.login') }}"
+                   {% if request.endpoint == 'auth.login' %}class="active"{% endif %}>Log In</a>
             </li>
         {% endif %}
     </ul>
@@ -27,3 +36,7 @@
     {% endfor %}
     {% block content %}{% endblock %}
 </section>
+<footer>
+    Free/libre and open-source software distributed under the GPL-3.0. Design inspired by
+    <a href="https://openprinting.github.io/cups" target="_blank">OpenPrinting CUPS</a>.
+</footer>
