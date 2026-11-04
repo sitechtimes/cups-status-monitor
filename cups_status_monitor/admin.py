@@ -1,6 +1,5 @@
 import functools
 
-import click
 from flask import (
     Blueprint,
     flash,
@@ -23,21 +22,19 @@ Then the blueprint is registered with the application when it is available in th
 """
 bp = Blueprint("admin", __name__, url_prefix="/admin")
 
-@bp.route("/")
-def dashboard():
-    db = get_db()
-    return render_template("admin/dashboard.html")
-
-
-
-
-def admin_required(view):
+def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
-        if g.user is None:
-            flash("You are not an admin.")
+        if "user" not in g or g.user is None:
+            flash("You are not logged in.")
             return redirect(url_for("auth.login"))
 
         return view(**kwargs)
 
     return wrapped_view
+
+@bp.route("/dashboard")
+@login_required
+def dashboard():
+    db = get_db()
+    return render_template("admin/dashboard.html")

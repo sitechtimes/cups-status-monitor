@@ -63,7 +63,8 @@ def login():
         else:
             session.clear()
             session["user_id"] = user["id"]
-            return redirect(url_for("index"))
+            g.user = user
+            return redirect(url_for("admin.dashboard"))
 
         flash(error)
 
@@ -73,15 +74,4 @@ def login():
 @bp.route("/logout")
 def logout():
     session.clear()
-    return redirect(url_for("index"))
-
-
-def login_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for("auth.login"))
-
-        return view(**kwargs)
-
-    return wrapped_view
+    return redirect(url_for("auth.login"))
