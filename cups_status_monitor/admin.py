@@ -1,17 +1,9 @@
-import functools
-
 from flask import (
     Blueprint,
-    flash,
-    g,
-    redirect,
     render_template,
-    request,
-    session,
-    url_for,
 )
-from werkzeug.security import check_password_hash, generate_password_hash
 
+from cups_status_monitor.auth import login_required
 from cups_status_monitor.db import get_db
 
 """
@@ -22,16 +14,6 @@ Then the blueprint is registered with the application when it is available in th
 """
 bp = Blueprint("admin", __name__, url_prefix="/admin")
 
-def login_required(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if "user" not in g or g.user is None:
-            flash("You are not logged in.")
-            return redirect(url_for("auth.login"))
-
-        return view(**kwargs)
-
-    return wrapped_view
 
 @bp.route("/dashboard")
 @login_required

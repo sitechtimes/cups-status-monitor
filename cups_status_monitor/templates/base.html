@@ -14,14 +14,15 @@
         </li>
         {% if g.user %}
             <li>
-                <span>{{ g.user['username'] }}</span>
+                <a href="{{ url_for("admin.dashboard") }}"
+                   {% if request.endpoint == 'admin.dashboard' %}class="active"{% endif %}>Dashboard</a>
             </li>
             <li>
-                <a href="{{ url_for('auth.logout') }}">Log Out</a>
+                <a href="{{ url_for("auth.logout") }}">Log Out</a>
             </li>
         {% else %}
             <li>
-                <a href="{{ url_for('auth.login') }}"
+                <a href="{{ url_for("auth.login") }}"
                    {% if request.endpoint == 'auth.login' %}class="active"{% endif %}>Log In</a>
             </li>
         {% endif %}
