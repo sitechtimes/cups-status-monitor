@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<title>{% block title %}{% endblock %} - CUPS Status Monitor</title>
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}" />
+<nav>
+    <ul>
+        <li>
+            <a href="https://github.com/sitechtimes/cups-status-monitor"
+               target="_blank">CUPS Status Monitor</a>
+        </li>
+        <li>
+            <!-- TODO: add home page -->
+            <a href="#">Home</a>
+        </li>
+        {% if g.user %}
+            <li>
+                <a href="{{ url_for("admin.dashboard") }}"
+                   {% if request.endpoint == 'admin.dashboard' %}class="active"{% endif %}>Dashboard</a>
+            </li>
+            <li>
+                <a href="{{ url_for("auth.logout") }}">Log Out</a>
+            </li>
+        {% else %}
+            <li>
+                <a href="{{ url_for("auth.login") }}"
+                   {% if request.endpoint == 'auth.login' %}class="active"{% endif %}>Log In</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+<section class="content">
+    <header>
+        {% block header %}{% endblock %}
+    </header>
+    {% for message in get_flashed_messages() %}
+        <div class="flash">{{ message }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+</section>
+<footer>
+    Free/libre and open-source software distributed under the GPL-3.0. Design inspired by
+    <a href="https://openprinting.github.io/cups" target="_blank">OpenPrinting CUPS</a>.
+</footer>

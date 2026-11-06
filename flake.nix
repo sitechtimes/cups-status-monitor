@@ -16,8 +16,9 @@
             python3
             uv
             pyright
-            black
-            isort
+            ruff
+            vscode-css-languageserver
+            prettier
           ];
 
           env = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {

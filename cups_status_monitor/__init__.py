@@ -36,4 +36,8 @@ def create_app(test_config=None):
 
     app.register_blueprint(auth.bp)
 
+    from cups_status_monitor import admin
+
+    app.register_blueprint(admin.bp)
+
     return app
