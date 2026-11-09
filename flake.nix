@@ -19,6 +19,7 @@
             ruff
             vscode-css-languageserver
             prettier
+            cups
           ];
 
           env = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
