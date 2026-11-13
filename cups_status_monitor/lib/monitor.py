@@ -1,28 +1,55 @@
-import cups 
-from dotenv import load_dotenv
 import os
+
+import cups
+from dotenv import load_dotenv
 
 load_dotenv()
 
-cups_ip = os.getenv('CUPS_IP', '127.0.0.1')
-
+cups_ip = os.getenv("CUPS_IP", "127.0.0.1")
 cups.setServer(cups_ip)
 
-printer_data = {}
 
-try:
-    import cups
-    conn = cups.Connection()
-    printers = conn.getPrinters()
+class PrinterScanner:
+    def __init__(self):
+        self.connection = cups.Connection()
+        self.printers: list[dict] = []
+        self.classes: list[dict] = []
 
-    if not printers:
-        print("No printers found on this system.")
-    else:
-        for name, attrs in printers.items():
-            if not attrs.get("printer-type") & cups.CUPS_PRINTER_CLASS:
-                printer_data[name] = dict(attrs)
+    def scan_printers(self) -> list[dict]:
+        """
+        Returns:
+            The discovered printers (excluding classes).
 
-except Exception as error:
-    print(error)
+        Raises:
+            IPPError: IPP problem.
+        """
 
-print(printer_data)
+        discovered_printers: dict = self.connection.getPrinters()
+
+        for printer_name, printer_attributes in discovered_printers.items():
+            if not printer_attributes.get("printer-type") & cups.CUPS_PRINTER_CLASS:
+                self.printers.append(
+                    {"name": printer_name, "attributes": printer_attributes}
+                )
+
+        return self.printers
+
+    def scan_classes(self) -> list[dict]:
+        """
+        Returns:
+            The discovered classes with their printer members.
+
+        Raises:
+            IPPError: IPP problem.
+        """
+
+        discovered_classes: dict = self.connection.getClasses()
+
+        for class_name, class_printers in discovered_classes.items():
+            self.classes.append({"name": class_name, "printers": class_printers})
+
+        return self.classes
+
+
+scanner = PrinterScanner()
+print(scanner.scan_classes())
