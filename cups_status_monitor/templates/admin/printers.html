@@ -3,4 +3,29 @@
     <h1>{% block title %}Admin{% endblock %}</h1>
     <h2 class="title">Printers</h2>
 {% endblock %}
-{% block content %}{% endblock %}
+{% block content %}
+    <table class="data-list">
+        <thead>
+            <tr>
+                <th>Printer Name</th>
+                <th>Description</th>
+                <th>Location</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>A</td>
+                <td>A</td>
+                <td>A</td>
+                <td>A</td>
+            </tr>
+            <tr>
+                <td>B</td>
+                <td>B</td>
+                <td>B</td>
+                <td>B</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}
