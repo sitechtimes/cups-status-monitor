@@ -12,7 +12,7 @@ A Blueprint is a way to organize a group of related views and other code.
 Rather than registering views and other code directly with an application, they are registered with a blueprint.
 Then the blueprint is registered with the application when it is available in the factory function.
 """
-bp = Blueprint("admin", __name__, url_prefix="/admin")
+bp = Blueprint("admin", __name__, url_prefix="/")
 
 
 @bp.route("/dashboard")
@@ -20,3 +20,10 @@ bp = Blueprint("admin", __name__, url_prefix="/admin")
 def dashboard():
     db = get_db()
     return render_template("admin/dashboard.html")
+
+
+@bp.route("/printers")
+@login_required
+def printers():
+    db = get_db()
+    return render_template("admin/printers.html")
