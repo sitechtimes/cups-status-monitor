@@ -49,7 +49,3 @@ class PrinterScanner:
             self.classes.append({"name": class_name, "printers": class_printers})
 
         return self.classes
-
-
-scanner = PrinterScanner()
-print(scanner.scan_classes())
