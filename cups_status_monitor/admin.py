@@ -5,6 +5,7 @@ from flask import (
 
 from cups_status_monitor.auth import login_required
 from cups_status_monitor.db import get_db
+from cups_status_monitor.lib.monitor import PrinterScanner
 
 """
 Source: https://flask.palletsprojects.com/en/stable/tutorial/views
@@ -13,6 +14,8 @@ Rather than registering views and other code directly with an application, they 
 Then the blueprint is registered with the application when it is available in the factory function.
 """
 bp = Blueprint("admin", __name__, url_prefix="/")
+
+scanner = PrinterScanner()
 
 
 @bp.route("/dashboard")
@@ -26,4 +29,5 @@ def dashboard():
 @login_required
 def printers():
     db = get_db()
-    return render_template("admin/printers.html")
+    printers = scanner.scan_printers()
+    return render_template("admin/printers.html", printers=printers)

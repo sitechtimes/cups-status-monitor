@@ -14,18 +14,15 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-            </tr>
-            <tr>
-                <td>B</td>
-                <td>B</td>
-                <td>B</td>
-                <td>B</td>
-            </tr>
+            {% for printer in printers %}
+                <tr>
+                    <td>{{printer.name}}</td>
+                    <td>{{printer.attributes["printer-make-and-model"]}}</td>
+                    <td>{{printer.attributes["printer-location"]}}</td>
+                    <td>{{printer.attributes["printer-state"]}}</td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
+    <!--<p>{{ printers }}</p>-->
 {% endblock %}
