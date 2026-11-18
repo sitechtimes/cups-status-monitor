@@ -24,6 +24,8 @@ class PrinterScanner:
             IPPError: IPP problem.
         """
 
+        self.printers = []
+
         discovered_printers: dict = self.connection.getPrinters()
 
         for printer_name, printer_attributes in discovered_printers.items():
@@ -42,6 +44,8 @@ class PrinterScanner:
         Raises:
             IPPError: IPP problem.
         """
+
+        self.classes = []
 
         discovered_classes: dict = self.connection.getClasses()
 
