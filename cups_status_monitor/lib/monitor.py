@@ -17,6 +17,8 @@ class PrinterScanner:
 
     def scan_printers(self) -> list[dict]:
         """
+        Scans the CUPS server for connected printers.
+
         Returns:
             The discovered printers (excluding classes).
 
@@ -38,6 +40,8 @@ class PrinterScanner:
 
     def scan_classes(self) -> list[dict]:
         """
+        Scan the CUPS server for added classes.
+
         Returns:
             The discovered classes with their printer members.
 
