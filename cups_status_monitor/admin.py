@@ -1,3 +1,5 @@
+from typing import TypedDict
+
 from flask import (
     Blueprint,
     jsonify,
@@ -18,13 +20,17 @@ Then the blueprint is registered with the application when it is available in th
 bp = Blueprint("admin", __name__, url_prefix="/")
 
 scanner = PrinterScanner()
-discovered_printers: list[dict] = []
 
 
-def refresh_printer_data():
-    global discovered_printers
-    data = scanner.scan_printers()
-    discovered_printers = [
+class PrinterData(TypedDict):
+    name: str
+    model: str
+    location: str
+    state: bool
+
+
+def fetch_printer_data() -> list[PrinterData]:
+    return [
         {
             "name": printer.get("name", ""),
             "model": printer.get("attributes", {}).get("printer-make-and-model", ""),
@@ -35,11 +41,8 @@ def refresh_printer_data():
                 ).values()
             ),
         }
-        for printer in data
+        for printer in scanner.scan_printers()
     ]
-
-
-refresh_printer_data()
 
 
 @bp.route("/dashboard")
@@ -51,10 +54,8 @@ def dashboard():
 @bp.route("/printers", methods=("GET", "POST"))
 @login_required
 def printers():
-    global discovered_printers
+    if request.method == "POST":
+        return jsonify({"printers": fetch_printer_data()})
 
-    if request.method == "GET":
-        return render_template("admin/printers.html", printers=discovered_printers)
-    elif request.method == "POST":
-        refresh_printer_data()
-        return jsonify({"printers": discovered_printers})
+    # load the template if it was a GET request
+    return render_template("admin/printers.html", printers=fetch_printer_data())

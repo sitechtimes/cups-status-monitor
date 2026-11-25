@@ -3,7 +3,9 @@
     <h1>{% block title %}Admin{% endblock %}</h1>
     <h2 class="title">
         Printers
-        <button id="refresh-printers-button">Refresh</button>
+        <div class="header-toolbar">
+            <button id="refresh-printers-button">Refresh</button>
+        </div>
     </h2>
 {% endblock %}
 {% block content %}
@@ -19,10 +21,10 @@
         <tbody id="printer-table-body">
             {% for printer in printers %}
                 <tr>
-                    <td>{{ printer.name }}</td>
-                    <td>{{ printer.attributes["printer-make-and-model"] }}</td>
-                    <td>{{ printer.attributes["printer-location"] }}</td>
-                    <td>{{ printer.attributes["printer-state"] }}</td>
+                    <td>{{ printer["name"] }}</td>
+                    <td>{{ printer["model"] }}</td>
+                    <td>{{ printer["location"] }}</td>
+                    <td>{{ printer["state"] }}</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -34,38 +36,40 @@
         const printerTableBody = document.getElementById("printer-table-body");
 
         refreshPrintersButton.addEventListener("click", async () => {
-          refreshPrintersButton.disabled = true;
-          refreshPrintersButton.textContent = "Scanning...";
+            refreshPrintersButton.disabled = true;
+            refreshPrintersButton.textContent = "Scanning...";
 
-          try {
-            const response = await fetch(printersRoute, {
-                method : "POST",
-                headers: { "X-Requested-With": "XMLHttpRequest" },
-            });
+            try {
+                const response = await fetch(printersRoute, {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                });
 
-            if (!response.ok)
-                throw new Error(`Request failed: ${response.status}`);
+                if (!response.ok)
+                    throw new Error(`Request failed: ${response.status}`);
 
-            const data = await response.json();
-            printerTableBody.innerHTML = "";
+                const data = await response.json();
+                printerTableBody.innerHTML = "";
 
-            for (const printer of data.printers) {
-                const tr = document.createElement("tr");
+                for (const printer of data.printers) {
+                    const tr = document.createElement("tr");
 
-                for (const key of ["name", "model", "location", "state"]) {
-                    const td = document.createElement("td");
-                    td.textContent = printer[key] ?? "";
-                    tr.appendChild(td);
+                    for (const key of ["name", "model", "location", "state"]) {
+                        const td = document.createElement("td");
+                        td.textContent = printer[key] ?? "";
+                        tr.appendChild(td);
+                    }
+
+                    printerTableBody.appendChild(tr);
                 }
-
-                printerTableBody.appendChild(tr);
+            } catch (error) {
+                console.error("Failed to refresh printers:", error);
+            } finally {
+                refreshPrintersButton.disabled = false;
+                refreshPrintersButton.textContent = "Refresh";
             }
-          } catch (error) {
-              console.error("Failed to refresh printers:", error);
-          } finally {
-              refreshPrintersButton.disabled = false;
-              refreshPrintersButton.textContent = "Refresh";
-          }
         });
     </script>
 {% endblock %}
