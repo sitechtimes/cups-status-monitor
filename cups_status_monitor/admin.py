@@ -1,5 +1,3 @@
-from typing import TypedDict
-
 from flask import (
     Blueprint,
     jsonify,
@@ -8,16 +6,7 @@ from flask import (
 )
 
 from cups_status_monitor.auth import login_required
-from cups_status_monitor.lib.monitor import PrinterScanner
-from cups_status_monitor.lib.pinger import diagnose_printer_by_ip, extract_host
-
-
-class PrinterData(TypedDict):
-    name: str
-    model: str
-    location: str
-    state: bool
-
+from cups_status_monitor.lib.shared import Server
 
 """
 Source: https://flask.palletsprojects.com/en/stable/tutorial/views
@@ -26,34 +15,6 @@ Rather than registering views and other code directly with an application, they 
 Then the blueprint is registered with the application when it is available in the factory function.
 """
 bp = Blueprint("admin", __name__, url_prefix="/")
-
-scanner = PrinterScanner()
-
-
-def fetch_printer_data() -> list[PrinterData]:
-    return [
-        {
-            "name": printer.get("name", ""),
-            "model": printer.get("attributes", {}).get("printer-make-and-model", ""),
-            "location": printer.get("attributes", {}).get("printer-location", ""),
-            "state": any(
-                diagnose_printer_by_ip(
-                    extract_host(printer.get("attributes", {}).get("device-uri", ""))
-                ).values()
-            ),
-        }
-        for printer in scanner.scan_printers()
-    ]
-
-
-discovered_printers: list[PrinterData] = fetch_printer_data()
-"""Cached printer information shared between requests."""
-
-
-def refresh_printer_cache() -> list[PrinterData]:
-    global discovered_printers
-    discovered_printers = fetch_printer_data()
-    return discovered_printers
 
 
 @bp.route("/dashboard")
@@ -66,7 +27,7 @@ def dashboard():
 @login_required
 def printers():
     if request.method == "POST":
-        return jsonify({"printers": refresh_printer_cache()})
+        return jsonify({"printers": Server.refresh_printer_cache()})
 
     # load the template if it was a GET request
-    return render_template("admin/printers.html", printers=discovered_printers)
+    return render_template("admin/printers.html", printers=Server.printers)
