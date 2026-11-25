@@ -20,7 +20,7 @@ class PrinterScanner:
         Scans the CUPS server for connected printers.
 
         Returns:
-            The discovered printers (excluding classes).
+            list[dict]: The discovered printers (excluding classes).
 
         Raises:
             IPPError: IPP problem.
@@ -43,7 +43,7 @@ class PrinterScanner:
         Scan the CUPS server for added classes.
 
         Returns:
-            The discovered classes with their printer members.
+            list[dict]: The discovered classes with their printer members.
 
         Raises:
             IPPError: IPP problem.

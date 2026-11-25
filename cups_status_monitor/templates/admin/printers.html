@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% block header %}
     <h1>{% block title %}Admin{% endblock %}</h1>
-    <h2 class="title">Printers</h2>
+    <h2 class="title">
+        Printers
+        <button id="refresh-printers-button">Refresh</button>
+    </h2>
 {% endblock %}
 {% block content %}
     <table class="data-list">
@@ -13,7 +16,7 @@
                 <th>Status</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="printer-table-body">
             {% for printer in printers %}
                 <tr>
                     <td>{{printer.name}}</td>
@@ -24,5 +27,45 @@
             {% endfor %}
         </tbody>
     </table>
-    <!--<p>{{ printers }}</p>-->
+    <script>
+        const printersRoute = "{{ url_for('admin.printers') }}";
+
+        const refreshPrintersButton = document.getElementById("refresh-printers-button");
+        const printerTableBody = document.getElementById("printer-table-body");
+
+        refreshPrintersButton.addEventListener("click", async () => {
+          refreshPrintersButton.disabled = true;
+          refreshPrintersButton.textContent = "Scanning...";
+
+          try {
+            const response = await fetch(printersRoute, {
+                method : "POST",
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+            });
+
+            if (!response.ok)
+                throw new Error(`Request failed: ${response.status}`);
+
+            const data = await response.json();
+            printerTableBody.innerHTML = "";
+
+            for (const printer of data.printers) {
+                const tr = document.createElement("tr");
+
+                for (const key of ["name", "model", "location", "state"]) {
+                    const td = document.createElement("td");
+                    td.textContent = printer[key] ?? "";
+                    tr.appendChild(td);
+                }
+
+                printerTableBody.appendChild(tr);
+            }
+          } catch (error) {
+              console.error("Failed to refresh printers:", error);
+          } finally {
+              refreshPrintersButton.disabled = false;
+              refreshPrintersButton.textContent = "Refresh";
+          }
+        });
+    </script>
 {% endblock %}
