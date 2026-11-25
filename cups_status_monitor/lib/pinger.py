@@ -11,12 +11,7 @@ class PrinterPort(IntEnum):
 
 
 def extract_host(uri: str) -> str:
-    parsed = urlparse(uri)
-
-    if not parsed.hostname:
-        return ""
-
-    return parsed.hostname
+    return urlparse(uri).hostname or ""
 
 
 def check_printer_port(host: str, port: int, timeout: int = 2) -> bool:
@@ -35,7 +30,7 @@ def check_printer_port(host: str, port: int, timeout: int = 2) -> bool:
     try:
         with socket.create_connection((host, port), timeout=timeout):
             return True
-    except (socket.timeout, ConnectionRefusedError, OSError):
+    except (TimeoutError, ConnectionRefusedError, OSError):
         return False
 
 
