@@ -19,10 +19,10 @@
         <tbody id="printer-table-body">
             {% for printer in printers %}
                 <tr>
-                    <td>{{printer.name}}</td>
-                    <td>{{printer.attributes["printer-make-and-model"]}}</td>
-                    <td>{{printer.attributes["printer-location"]}}</td>
-                    <td>{{printer.attributes["printer-state"]}}</td>
+                    <td>{{ printer.name }}</td>
+                    <td>{{ printer.attributes["printer-make-and-model"] }}</td>
+                    <td>{{ printer.attributes["printer-location"] }}</td>
+                    <td>{{ printer.attributes["printer-state"] }}</td>
                 </tr>
             {% endfor %}
         </tbody>
