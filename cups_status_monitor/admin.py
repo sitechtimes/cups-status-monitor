@@ -11,6 +11,14 @@ from cups_status_monitor.auth import login_required
 from cups_status_monitor.lib.monitor import PrinterScanner
 from cups_status_monitor.lib.pinger import diagnose_printer_by_ip, extract_host
 
+
+class PrinterData(TypedDict):
+    name: str
+    model: str
+    location: str
+    state: bool
+
+
 """
 Source: https://flask.palletsprojects.com/en/stable/tutorial/views
 A Blueprint is a way to organize a group of related views and other code.
@@ -20,13 +28,6 @@ Then the blueprint is registered with the application when it is available in th
 bp = Blueprint("admin", __name__, url_prefix="/")
 
 scanner = PrinterScanner()
-
-
-class PrinterData(TypedDict):
-    name: str
-    model: str
-    location: str
-    state: bool
 
 
 def fetch_printer_data() -> list[PrinterData]:
@@ -45,6 +46,16 @@ def fetch_printer_data() -> list[PrinterData]:
     ]
 
 
+discovered_printers: list[PrinterData] = fetch_printer_data()
+"""Cached printer information shared between requests."""
+
+
+def refresh_printer_cache() -> list[PrinterData]:
+    global discovered_printers
+    discovered_printers = fetch_printer_data()
+    return discovered_printers
+
+
 @bp.route("/dashboard")
 @login_required
 def dashboard():
@@ -55,7 +66,7 @@ def dashboard():
 @login_required
 def printers():
     if request.method == "POST":
-        return jsonify({"printers": fetch_printer_data()})
+        return jsonify({"printers": refresh_printer_cache()})
 
     # load the template if it was a GET request
-    return render_template("admin/printers.html", printers=fetch_printer_data())
+    return render_template("admin/printers.html", printers=discovered_printers)
