@@ -93,6 +93,6 @@ class Server:
 
     @classmethod
     async def refresh_class_cache(cls) -> list:
-        cls.classes = await asyncio.to_thread(cls.scanner.scan_classes)
+        cls.classes = await cls.scanner.scan_classes # TODO: add the fetch_class_data() method and call it here
         cls.classes_last_updated = datetime.now()
         return cls.classes

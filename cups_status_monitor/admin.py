@@ -38,6 +38,10 @@ async def printers():
             }
         )
 
+    # populate it on first load
+    if Server.printers_last_updated is None:
+        await Server.refresh_printer_cache()
+
     # load the template if it was a GET request
     return render_template(
         "admin/printers.html",
@@ -57,6 +61,10 @@ async def classes():
                 "classesLastUpdated": format_timestamp(Server.classes_last_updated),
             }
         )
+
+    # populate it on first load
+    if Server.classes_last_updated is None:
+        await Server.refresh_class_cache()
 
     return render_template(
         "admin/classes.html",
