@@ -27,11 +27,7 @@
                 <tr>
                     <td>{{ klass.name }}</td>
                     <td>Code is hard</td>
-                    <td>
-                        {% for p in klass.printers %}
-                            {{ p.name if p is mapping else p }}{{ ", " if not loop.last }}
-                        {% endfor %}
-                    </td>
+                    <td>{{ klass.printers | join(", ") }}</td>
                 </tr>
             {% else %}
                 <tr>
