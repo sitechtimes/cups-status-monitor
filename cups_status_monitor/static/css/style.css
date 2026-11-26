@@ -87,7 +87,21 @@ nav ul li a:hover {
 
 h2.title,
 h3.title {
+    display: flex;
+    align-items: center;
     border-bottom: 2pt solid #ccc;
+}
+
+.title .header-toolbar {
+    flex: 1;
+    display: flex;
+    justify-content: right;
+    gap: 0.5em;
+}
+
+.note {
+    font-size: initial;
+    font-weight: initial;
 }
 
 .flash {
@@ -109,6 +123,42 @@ h3.title {
 
 .content form table td.field > * {
     display: block;
+}
+
+table.data-list {
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+}
+
+table.data-list th {
+    padding: 5px 10px 5px 12px;
+    text-align: left;
+    vertical-align: bottom;
+    white-space: nowrap;
+    color: #666;
+    border-bottom: solid thin #cccccc;
+    border-right: 2px solid rgba(191, 191, 191, 0.45);
+    background-color: black;
+}
+
+table.data-list td {
+    padding: 5px 2px 5px 10px;
+    vertical-align: inherit;
+    border-bottom: solid thin rgba(191, 191, 191, 0.45);
+}
+
+table.data-list tr:nth-child(even) {
+    background: rgba(191, 191, 191, 0.15);
+}
+
+table.data-list tr:nth-child(odd) {
+    background: rgba(191, 191, 191, 0.3);
+}
+
+button:disabled {
+    color: #444;
 }
 
 footer {

@@ -3,6 +3,7 @@ import functools
 import click
 from flask import (
     Blueprint,
+    current_app,
     flash,
     g,
     redirect,
@@ -21,7 +22,7 @@ A Blueprint is a way to organize a group of related views and other code.
 Rather than registering views and other code directly with an application, they are registered with a blueprint.
 Then the blueprint is registered with the application when it is available in the factory function.
 """
-bp = Blueprint("auth", __name__, url_prefix="/auth")
+bp = Blueprint("auth", __name__, url_prefix="/")
 
 
 @bp.cli.command("register")
@@ -95,6 +96,6 @@ def login_required(view):
             flash("You are not logged in.")
             return redirect(url_for("auth.login"))
 
-        return view(**kwargs)
+        return current_app.ensure_sync(view)(**kwargs)
 
     return wrapped_view
