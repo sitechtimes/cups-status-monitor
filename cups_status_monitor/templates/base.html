@@ -22,6 +22,10 @@
                 {% if request.endpoint == 'admin.printers' %}class="active"{% endif %}>Printers</a>
             </li>
             <li>
+                <a href="{{ url_for("admin.classes") }}"
+                {% if request.endpoint == 'admin.classes' %}class="active"{% endif %}>Classes</a>
+            </li>
+            <li>
                 <a href="{{ url_for("auth.logout") }}">Log Out</a>
             </li>
         {% else %}

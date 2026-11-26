@@ -17,7 +17,12 @@ class Server:
     printers: list[PrinterData] = []
     """The cached printer information shared between requests."""
     printers_last_updated: datetime | None = None
-    """The timestamp of the last recorded fetch."""
+    """The timestamp of the last recorded printer fetch."""
+
+    classes: list = []
+    """The cached printer class data shared between requests."""
+    classes_last_updated: datetime | None = None
+    """The timestamp of the last recorded class fetch."""
 
     @classmethod
     async def fetch_printer_data(cls) -> list[PrinterData]:
@@ -76,8 +81,6 @@ class Server:
                 status=status,
             )
 
-        cls.printers_last_updated = datetime.now()  # update last synced time
-
         return await asyncio.gather(
             *(collect(printer) for printer in discovered_printers)
         )
@@ -85,4 +88,11 @@ class Server:
     @classmethod
     async def refresh_printer_cache(cls) -> list[PrinterData]:
         cls.printers = await cls.fetch_printer_data()
+        cls.printers_last_updated = datetime.now()  # update last synced time
         return cls.printers
+
+    @classmethod
+    async def refresh_class_cache(cls) -> list:
+        cls.classes = await cls.scanner.scan_classes # TODO: add the fetch_class_data() method and call it here
+        cls.classes_last_updated = datetime.now()
+        return cls.classes

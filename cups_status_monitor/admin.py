@@ -9,6 +9,7 @@ from flask import (
 
 from cups_status_monitor.auth import login_required
 from cups_status_monitor.lib.shared import Server
+from cups_status_monitor.lib.utils import format_timestamp
 
 """
 Source: https://flask.palletsprojects.com/en/stable/tutorial/views
@@ -33,21 +34,40 @@ async def printers():
         return jsonify(
             {
                 "printers": [asdict(printer) for printer in printers],
-                "printersLastUpdated": (
-                    Server.printers_last_updated.strftime("%a, %d %b %Y %H:%M:%S.%f")
-                    if Server.printers_last_updated
-                    else None
-                ),
+                "printersLastUpdated": format_timestamp(Server.printers_last_updated),
             }
         )
+
+    # populate it on first load
+    if Server.printers_last_updated is None:
+        await Server.refresh_printer_cache()
 
     # load the template if it was a GET request
     return render_template(
         "admin/printers.html",
         printers=Server.printers,
-        printers_last_updated=(
-            Server.printers_last_updated.strftime("%a, %d %b %Y %H:%M:%S.%f")
-            if Server.printers_last_updated
-            else None
-        ),
+        printers_last_updated=format_timestamp(Server.printers_last_updated),
+    )
+
+
+@bp.route("/classes", methods=("GET", "POST"))
+@login_required
+async def classes():
+    if request.method == "POST":
+        classes = await Server.refresh_class_cache()
+        return jsonify(
+            {
+                "classes": classes,
+                "classesLastUpdated": format_timestamp(Server.classes_last_updated),
+            }
+        )
+
+    # populate it on first load
+    if Server.classes_last_updated is None:
+        await Server.refresh_class_cache()
+
+    return render_template(
+        "admin/classes.html",
+        classes=Server.classes,
+        classes_last_updated=format_timestamp(Server.classes_last_updated),
     )
