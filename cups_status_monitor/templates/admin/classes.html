@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block header %}
+    <h1>{% block title %}Admin{% endblock %}</h1>
+    <h2 class="title">
+        Classes
+        <div class="header-toolbar">
+            <span id="classes-last-updated" class="note">
+                {% if classes_last_updated %}
+                    Last updated at {{ classes_last_updated }}.
+                {% endif %}
+            </span>
+            <button id="refresh-classes-button">Refresh</button>
+        </div>
+    </h2>
+{% endblock %}
+{% block content %}
+    <table class="data-list">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Printers</th>
+            </tr>
+        </thead>
+        <tbody id="class-table-body">
+            {% for klass in classes %}
+                <tr>
+                    <td>{{ klass.name }}</td>
+                    <td>Code is hard</td>
+                    <td>
+                        {% for p in klass.printers %}
+                            {{ p.name if p is mapping else p }}{{ ", " if not loop.last }}
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">No classes found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+        const classesRoute = "{{ url_for('admin.classes') }}";
+
+        const classesLastUpdatedSpan = document.getElementById("classes-last-updated");
+        const refreshClassesButton = document.getElementById("refresh-classes-button");
+        const classTableBody = document.getElementById("class-table-body");
+
+        refreshClassesButton.addEventListener("click", async () => {
+            refreshClassesButton.disabled = true;
+            refreshClassesButton.textContent = "Refreshing...";
+
+            try {
+                const response = await fetch(classesRoute, {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                });
+
+                if (!response.ok)
+                    throw new Error(`Request failed: ${response.status}`);
+
+                const data = await response.json();
+
+                classTableBody.innerHTML = "";
+                classesLastUpdatedSpan.textContent = `Last updated at ${data.classesLastUpdated}.`;
+
+                for (const klass of data.classes) {
+                    const tr = document.createElement("tr");
+
+                    const printerNames = (klass.printers ?? []).map(
+                        p => (typeof p === "string" ? p : p.name)
+                    );
+
+                    const values = [
+                        klass.name,
+                        "Code is hard",
+                        printerNames.join(", "),
+                    ];
+
+                    for (const value of values) {
+                        const td = document.createElement("td");
+                        td.textContent = value ?? "";
+                        tr.appendChild(td);
+                    }
+
+                    classTableBody.appendChild(tr);
+                }
+
+                if (data.classes.length === 0) {
+                    const tr = document.createElement("tr");
+                    const td = document.createElement("td");
+
+                    td.colSpan = 3;
+                    td.textContent = "No classes found.";
+
+                    tr.appendChild(td);
+                    classTableBody.appendChild(tr);
+                }
+            } catch (error) {
+                console.error("Failed to refresh classes:", error);
+            } finally {
+                refreshClassesButton.disabled = false;
+                refreshClassesButton.textContent = "Refresh";
+            }
+        });
+    </script>
+{% endblock %}
