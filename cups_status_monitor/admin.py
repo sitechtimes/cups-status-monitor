@@ -1,3 +1,5 @@
+from dataclasses import asdict
+
 from flask import (
     Blueprint,
     jsonify,
@@ -25,9 +27,10 @@ def dashboard():
 
 @bp.route("/printers", methods=("GET", "POST"))
 @login_required
-def printers():
+async def printers():
     if request.method == "POST":
-        return jsonify({"printers": Server.refresh_printer_cache()})
+        printers = await Server.refresh_printer_cache()
+        return jsonify({"printers": [asdict(printer) for printer in printers]})
 
     # load the template if it was a GET request
     return render_template("admin/printers.html", printers=Server.printers)

@@ -3,6 +3,7 @@ import functools
 import click
 from flask import (
     Blueprint,
+    current_app,
     flash,
     g,
     redirect,
@@ -95,6 +96,6 @@ def login_required(view):
             flash("You are not logged in.")
             return redirect(url_for("auth.login"))
 
-        return view(**kwargs)
+        return current_app.ensure_sync(view)(**kwargs)
 
     return wrapped_view

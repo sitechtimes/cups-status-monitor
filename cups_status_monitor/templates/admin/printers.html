@@ -12,19 +12,29 @@
     <table class="data-list">
         <thead>
             <tr>
-                <th>Printer Name</th>
-                <th>Description</th>
+                <th>Name</th>
+                <th>Model</th>
                 <th>Location</th>
+                <th>Reachable</th>
                 <th>Status</th>
+                <th>Reasons</th>
+                <th>Messages</th>
             </tr>
         </thead>
         <tbody id="printer-table-body">
             {% for printer in printers %}
                 <tr>
-                    <td>{{ printer["name"] }}</td>
-                    <td>{{ printer["model"] }}</td>
-                    <td>{{ printer["location"] }}</td>
-                    <td>{{ printer["state"] }}</td>
+                    <td>{{ printer.name }}</td>
+                    <td>{{ printer.model }}</td>
+                    <td>{{ printer.location }}</td>
+                    <td>{{ "Yes" if printer.status.reachable else "No" }}</td>
+                    <td>{{ printer.status.state }}</td>
+                    <td>{{ printer.status.reasons | join("\n") }}</td>
+                    <td>{{ printer.status.messages | join("\n") }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7">No printers found.</td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -54,14 +64,36 @@
                 printerTableBody.innerHTML = "";
 
                 for (const printer of data.printers) {
+                    const status = printer.status ?? {};
                     const tr = document.createElement("tr");
 
-                    for (const key of ["name", "model", "location", "state"]) {
+                     const values = [
+                        printer.name,
+                        printer.model,
+                        printer.location,
+                        status.reachable ? "Yes" : "No",
+                        status.state,
+                        (status.reasons ?? []).join("\n"),
+                        (status.messages ?? []).join("\n"),
+                    ];
+
+                    for (const value of values) {
                         const td = document.createElement("td");
-                        td.textContent = printer[key] ?? "";
+                        td.textContent = value ?? "";
                         tr.appendChild(td);
                     }
 
+                    printerTableBody.appendChild(tr);
+                }
+
+                if (data.printers.length === 0) {
+                    const tr = document.createElement("tr");
+                    const td = document.createElement("td");
+
+                    td.colSpan = 7;
+                    td.textContent = "No printers discovered.";
+
+                    tr.appendChild(td);
                     printerTableBody.appendChild(tr);
                 }
             } catch (error) {
