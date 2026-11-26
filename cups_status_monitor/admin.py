@@ -30,7 +30,24 @@ def dashboard():
 async def printers():
     if request.method == "POST":
         printers = await Server.refresh_printer_cache()
-        return jsonify({"printers": [asdict(printer) for printer in printers]})
+        return jsonify(
+            {
+                "printers": [asdict(printer) for printer in printers],
+                "printersLastUpdated": (
+                    Server.printers_last_updated.strftime("%a, %d %b %Y %H:%M:%S.%f")
+                    if Server.printers_last_updated
+                    else None
+                ),
+            }
+        )
 
     # load the template if it was a GET request
-    return render_template("admin/printers.html", printers=Server.printers)
+    return render_template(
+        "admin/printers.html",
+        printers=Server.printers,
+        printers_last_updated=(
+            Server.printers_last_updated.strftime("%a, %d %b %Y %H:%M:%S.%f")
+            if Server.printers_last_updated
+            else None
+        ),
+    )

@@ -96,6 +96,12 @@ h3.title {
     flex: 1;
     display: flex;
     justify-content: right;
+    gap: 0.5em;
+}
+
+.note {
+    font-size: initial;
+    font-weight: initial;
 }
 
 .flash {

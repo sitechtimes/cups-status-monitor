@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 
 from cups_status_monitor.lib.connectivity import (
     extract_host,
@@ -12,8 +13,11 @@ from cups_status_monitor.lib.types import PrinterData, PrinterState, PrinterStat
 class Server:
     scanner = PrinterScanner()
     """The shared printer scanner instance."""
+
     printers: list[PrinterData] = []
     """The cached printer information shared between requests."""
+    printers_last_updated: datetime | None = None
+    """The timestamp of the last recorded fetch."""
 
     @classmethod
     async def fetch_printer_data(cls) -> list[PrinterData]:
@@ -71,6 +75,8 @@ class Server:
                 uri=uri,
                 status=status,
             )
+
+        cls.printers_last_updated = datetime.now()  # update last synced time
 
         return await asyncio.gather(
             *(collect(printer) for printer in discovered_printers)

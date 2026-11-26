@@ -4,6 +4,11 @@
     <h2 class="title">
         Printers
         <div class="header-toolbar">
+            <span id="printers-last-updated" class="note">
+                {% if printers_last_updated %}
+                    Last updated at {{ printers_last_updated }}.
+                {% endif %}
+            </span>
             <button id="refresh-printers-button">Refresh</button>
         </div>
     </h2>
@@ -42,6 +47,7 @@
     <script>
         const printersRoute = "{{ url_for('admin.printers') }}";
 
+        const printersLastUpdatedSpan = document.getElementById("printers-last-updated");
         const refreshPrintersButton = document.getElementById("refresh-printers-button");
         const printerTableBody = document.getElementById("printer-table-body");
 
@@ -61,13 +67,15 @@
                     throw new Error(`Request failed: ${response.status}`);
 
                 const data = await response.json();
+
                 printerTableBody.innerHTML = "";
+                printersLastUpdatedSpan.textContent = `Last updated at ${data.printersLastUpdated}.`
 
                 for (const printer of data.printers) {
                     const status = printer.status ?? {};
                     const tr = document.createElement("tr");
 
-                     const values = [
+                    const values = [
                         printer.name,
                         printer.model,
                         printer.location,
