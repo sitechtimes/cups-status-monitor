@@ -19,6 +19,9 @@ class Server:
     printers_last_updated: datetime | None = None
     """The timestamp of the last recorded fetch."""
 
+    classes: list = []
+    """The shared printer class data."""
+
     @classmethod
     async def fetch_printer_data(cls) -> list[PrinterData]:
         discovered_printers = cls.scanner.scan_printers()
@@ -86,3 +89,8 @@ class Server:
     async def refresh_printer_cache(cls) -> list[PrinterData]:
         cls.printers = await cls.fetch_printer_data()
         return cls.printers
+
+    @classmethod
+    async def refresh_class_cache(cls) -> list:
+        cls.classes = await asyncio.to_thread(cls.scanner.scan_classes)
+        return cls.classes
